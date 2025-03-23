@@ -14,7 +14,13 @@ namespace PersonalJobAgent.Core.Services
     {
         private readonly ILogger<AIService> _logger;
         private readonly string _pythonScriptsPath;
-        private bool _isPythonInitialized = false;
+        private bool _isPythonInitialized = false;        
+        
+        public AIService(string pythonScriptsPath)
+        {
+              _pythonScriptsPath = pythonScriptsPath;
+        }
+
 
         public AIService(ILogger<AIService> logger)
         {

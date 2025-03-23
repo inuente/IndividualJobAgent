@@ -7,59 +7,20 @@ namespace PersonalJobAgent.Core.Models
     /// </summary>
     public class Application
     {
-        /// <summary>
-        /// Gets or sets the unique identifier for the application.
-        /// </summary>
-        public int ApplicationId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the profile ID this application belongs to.
-        /// </summary>
-        public int ProfileId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the job ID this application is for.
-        /// </summary>
-        public int JobId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date when the application was submitted.
-        /// </summary>
-        public DateTime ApplicationDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the status of the application (e.g., Applied, Interviewing, Rejected, Offered).
-        /// </summary>
+        public int Id { get; set; }
+        public DateTime ApplicationDate { get; set; } // Changed from AppliedDate
         public string Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the resume version used for this application.
-        /// </summary>
-        public int? ResumeVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets the cover letter version used for this application.
-        /// </summary>
-        public int? CoverLetterVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets notes about the application.
-        /// </summary>
+        public string CoverLetter { get; set; }
         public string Notes { get; set; }
+        public DateTime LastUpdated { get; set; }
 
-        /// <summary>
-        /// Gets or sets the date when the status was last updated.
-        /// </summary>
-        public DateTime LastStatusUpdateDate { get; set; }
+        // Foreign keys
+        public int UserProfileId { get; set; }
+        public int JobListingId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user profile this application belongs to.
-        /// </summary>
+        // Navigation properties
         public UserProfile UserProfile { get; set; }
-
-        /// <summary>
-        /// Gets or sets the job listing this application is for.
-        /// </summary>
         public JobListing JobListing { get; set; }
     }
+
 }
