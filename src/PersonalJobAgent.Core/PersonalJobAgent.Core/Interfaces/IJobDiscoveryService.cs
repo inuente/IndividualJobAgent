@@ -6,90 +6,60 @@ using PersonalJobAgent.Core.Models;
 namespace PersonalJobAgent.Core.Interfaces
 {
     /// <summary>
-    /// Interface for job discovery service.
+    /// Interface for job discovery service operations
     /// </summary>
     public interface IJobDiscoveryService
     {
         /// <summary>
-        /// Gets a job listing by ID.
+        /// Searches for job listings based on keywords
         /// </summary>
-        /// <param name="jobId">The job ID.</param>
-        /// <returns>The job listing.</returns>
-        Task<JobListing> GetJobAsync(int jobId);
-
+        /// <param name="keywords">Keywords to search for</param>
+        /// <param name="location">Optional location filter</param>
+        /// <param name="pageNumber">Page number for pagination</param>
+        /// <param name="pageSize">Page size for pagination</param>
+        /// <returns>Collection of job listings matching the search criteria</returns>
+        Task<IEnumerable<JobListing>> SearchJobsAsync(string[] keywords, string location = null, int pageNumber = 1, int pageSize = 20);
+        
         /// <summary>
-        /// Searches for job listings based on criteria.
+        /// Gets job listings by location
         /// </summary>
-        /// <param name="keywords">Keywords to search for.</param>
-        /// <param name="location">Location to search in.</param>
-        /// <param name="jobType">Type of job (e.g., Full-time, Part-time).</param>
-        /// <param name="platforms">Platforms to search on (e.g., LinkedIn, HeadHunter).</param>
-        /// <param name="page">Page number for pagination.</param>
-        /// <param name="pageSize">Page size for pagination.</param>
-        /// <returns>A list of job listings matching the criteria.</returns>
-        Task<IEnumerable<JobListing>> SearchJobsAsync(string keywords, string location, string jobType, IEnumerable<string> platforms, int page = 1, int pageSize = 20);
-
+        /// <param name="location">Location to filter by</param>
+        /// <param name="radiusInMiles">Radius in miles from the location</param>
+        /// <param name="pageNumber">Page number for pagination</param>
+        /// <param name="pageSize">Page size for pagination</param>
+        /// <returns>Collection of job listings in the specified location</returns>
+        Task<IEnumerable<JobListing>> GetJobsByLocationAsync(string location, int radiusInMiles = 25, int pageNumber = 1, int pageSize = 20);
+        
         /// <summary>
-        /// Gets job recommendations for a user profile.
+        /// Gets recommended job listings for a user profile
         /// </summary>
-        /// <param name="profileId">The profile ID.</param>
-        /// <param name="count">Number of recommendations to return.</param>
-        /// <returns>A list of recommended job listings with match scores.</returns>
-        Task<IEnumerable<JobListing>> GetRecommendationsAsync(int profileId, int count = 10);
-
+        /// <param name="userProfileId">User profile identifier</param>
+        /// <param name="count">Number of recommendations to return</param>
+        /// <returns>Collection of recommended job listings</returns>
+        Task<IEnumerable<JobListing>> GetRecommendedJobsAsync(int userProfileId, int count = 10);
+        
         /// <summary>
-        /// Saves a job listing to the database.
+        /// Gets job listings from external platforms
         /// </summary>
-        /// <param name="job">The job listing to save.</param>
-        /// <returns>The saved job listing with ID assigned.</returns>
-        Task<JobListing> SaveJobAsync(JobListing job);
-
+        /// <param name="platforms">Collection of platform names to search</param>
+        /// <param name="keywords">Keywords to search for</param>
+        /// <param name="location">Optional location filter</param>
+        /// <param name="count">Number of results to return per platform</param>
+        /// <returns>Collection of job listings from external platforms</returns>
+        Task<IEnumerable<JobListing>> GetExternalJobsAsync(string[] platforms, string[] keywords, string location = null, int count = 10);
+        
         /// <summary>
-        /// Updates an existing job listing.
+        /// Saves a job listing to the database
         /// </summary>
-        /// <param name="job">The job listing to update.</param>
-        /// <returns>The updated job listing.</returns>
-        Task<JobListing> UpdateJobAsync(JobListing job);
-
+        /// <param name="jobListing">Job listing to save</param>
+        /// <returns>Saved job listing with ID</returns>
+        Task<JobListing> SaveJobListingAsync(JobListing jobListing);
+        
         /// <summary>
-        /// Marks a job listing as inactive.
+        /// Gets a job listing by ID
         /// </summary>
-        /// <param name="jobId">The job ID to mark as inactive.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        Task MarkJobInactiveAsync(int jobId);
-
-        /// <summary>
-        /// Synchronizes job listings from external platforms.
-        /// </summary>
-        /// <param name="profileId">The profile ID to synchronize for.</param>
-        /// <param name="platforms">Platforms to synchronize from.</param>
-        /// <returns>The number of new job listings found.</returns>
-        Task<int> SynchronizeJobsAsync(int profileId, IEnumerable<string> platforms);
-
-        /// <summary>
-        /// Creates a saved search for job listings.
-        /// </summary>
-        /// <param name="profileId">The profile ID.</param>
-        /// <param name="name">Name of the saved search.</param>
-        /// <param name="keywords">Keywords to search for.</param>
-        /// <param name="location">Location to search in.</param>
-        /// <param name="jobType">Type of job.</param>
-        /// <param name="platforms">Platforms to search on.</param>
-        /// <returns>The ID of the created saved search.</returns>
-        Task<int> CreateSavedSearchAsync(int profileId, string name, string keywords, string location, string jobType, IEnumerable<string> platforms);
-
-        /// <summary>
-        /// Gets saved searches for a user profile.
-        /// </summary>
-        /// <param name="profileId">The profile ID.</param>
-        /// <returns>A list of saved searches.</returns>
-        Task<IEnumerable<object>> GetSavedSearchesAsync(int profileId);
-
-        /// <summary>
-        /// Deletes a saved search.
-        /// </summary>
-        /// <param name="savedSearchId">The saved search ID to delete.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        Task DeleteSavedSearchAsync(int savedSearchId);
+        /// <param name="id">Job listing ID</param>
+        /// <returns>Job listing</returns>
+        Task<JobListing> GetJobListingAsync(int id);
     }
 }

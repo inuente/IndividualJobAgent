@@ -1,13 +1,14 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using PersonalJobAgent.Core.Models;
+using System.Windows.Input;
 using PersonalJobAgent.Core.Interfaces;
+using PersonalJobAgent.Core.Models;
 
 namespace PersonalJobAgent.UI.ViewModels
 {
     /// <summary>
-    /// ViewModel for the main dashboard view.
+    /// ViewModel for the Dashboard view
     /// </summary>
     public class DashboardViewModel : ViewModelBase
     {
@@ -16,122 +17,168 @@ namespace PersonalJobAgent.UI.ViewModels
         private readonly IApplicationService _applicationService;
         
         private UserProfile _userProfile;
-        private IEnumerable<JobListing> _recommendedJobs;
-        private IEnumerable<Application> _recentApplications;
-        private IEnumerable<object> _upcomingInterviews;
-        private object _applicationStats;
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardViewModel"/> class.
-        /// </summary>
-        /// <param name="profileService">The profile service.</param>
-        /// <param name="jobDiscoveryService">The job discovery service.</param>
-        /// <param name="applicationService">The application service.</param>
+        private ObservableCollection<JobListing> _recommendedJobs;
+        private ObservableCollection<Application> _recentApplications;
+        private bool _isLoading;
+        private string _statusMessage;
+
         public DashboardViewModel(
             IProfileService profileService,
             IJobDiscoveryService jobDiscoveryService,
             IApplicationService applicationService)
         {
-            _profileService = profileService ?? throw new ArgumentNullException(nameof(profileService));
-            _jobDiscoveryService = jobDiscoveryService ?? throw new ArgumentNullException(nameof(jobDiscoveryService));
-            _applicationService = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
+            _profileService = profileService;
+            _jobDiscoveryService = jobDiscoveryService;
+            _applicationService = applicationService;
+            
+            RecommendedJobs = new ObservableCollection<JobListing>();
+            RecentApplications = new ObservableCollection<Application>();
+            
+            RefreshCommand = CreateCommand(async () => await LoadDataAsync());
+            ViewProfileCommand = CreateCommand(ViewProfile);
+            SearchJobsCommand = CreateCommand(SearchJobs);
+            ViewApplicationsCommand = CreateCommand(ViewApplications);
         }
-        
+
         /// <summary>
-        /// Gets or sets the user profile.
+        /// Gets or sets the user profile
         /// </summary>
         public UserProfile UserProfile
         {
             get => _userProfile;
-            set
-            {
-                _userProfile = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _userProfile, value);
         }
-        
+
         /// <summary>
-        /// Gets or sets the recommended jobs.
+        /// Gets or sets the collection of recommended jobs
         /// </summary>
-        public IEnumerable<JobListing> RecommendedJobs
+        public ObservableCollection<JobListing> RecommendedJobs
         {
             get => _recommendedJobs;
-            set
-            {
-                _recommendedJobs = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _recommendedJobs, value);
         }
-        
+
         /// <summary>
-        /// Gets or sets the recent applications.
+        /// Gets or sets the collection of recent applications
         /// </summary>
-        public IEnumerable<Application> RecentApplications
+        public ObservableCollection<Application> RecentApplications
         {
             get => _recentApplications;
-            set
-            {
-                _recentApplications = value;
-                OnPropertyChanged();
-            }
+            set => SetProperty(ref _recentApplications, value);
         }
-        
+
         /// <summary>
-        /// Gets or sets the upcoming interviews.
+        /// Gets or sets a value indicating whether data is being loaded
         /// </summary>
-        public IEnumerable<object> UpcomingInterviews
+        public bool IsLoading
         {
-            get => _upcomingInterviews;
-            set
-            {
-                _upcomingInterviews = value;
-                OnPropertyChanged();
-            }
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
         }
-        
+
         /// <summary>
-        /// Gets or sets the application statistics.
+        /// Gets or sets the status message
         /// </summary>
-        public object ApplicationStats
+        public string StatusMessage
         {
-            get => _applicationStats;
-            set
-            {
-                _applicationStats = value;
-                OnPropertyChanged();
-            }
+            get => _statusMessage;
+            set => SetProperty(ref _statusMessage, value);
         }
-        
+
         /// <summary>
-        /// Loads dashboard data for the specified profile.
+        /// Gets the command to refresh the dashboard data
         /// </summary>
-        /// <param name="profileId">The profile ID.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task LoadDashboardDataAsync(int profileId)
+        public ICommand RefreshCommand { get; }
+
+        /// <summary>
+        /// Gets the command to view the user profile
+        /// </summary>
+        public ICommand ViewProfileCommand { get; }
+
+        /// <summary>
+        /// Gets the command to search for jobs
+        /// </summary>
+        public ICommand SearchJobsCommand { get; }
+
+        /// <summary>
+        /// Gets the command to view applications
+        /// </summary>
+        public ICommand ViewApplicationsCommand { get; }
+
+        /// <summary>
+        /// Initializes the view model
+        /// </summary>
+        public async Task InitializeAsync()
+        {
+            await LoadDataAsync();
+        }
+
+        /// <summary>
+        /// Loads the dashboard data
+        /// </summary>
+        private async Task LoadDataAsync()
         {
             try
             {
+                IsLoading = true;
+                StatusMessage = "Loading dashboard data...";
+
                 // Load user profile
-                UserProfile = await _profileService.GetProfileAsync(profileId);
-                
+                UserProfile = await _profileService.GetCurrentUserProfileAsync();
+
                 // Load recommended jobs
-                RecommendedJobs = await _jobDiscoveryService.GetRecommendationsAsync(profileId, 5);
-                
+                var recommendedJobs = await _jobDiscoveryService.GetRecommendedJobsAsync(UserProfile.Id, 5);
+                RecommendedJobs.Clear();
+                foreach (var job in recommendedJobs)
+                {
+                    RecommendedJobs.Add(job);
+                }
+
                 // Load recent applications
-                RecentApplications = await _applicationService.GetApplicationsForProfileAsync(profileId);
-                
-                // Load application statistics
-                ApplicationStats = await _applicationService.GetApplicationStatisticsAsync(profileId);
-                
-                // Load upcoming follow-ups
-                UpcomingInterviews = await _applicationService.GetUpcomingFollowUpsAsync(profileId);
+                var recentApplications = await _applicationService.GetRecentApplicationsAsync(UserProfile.Id, 5);
+                RecentApplications.Clear();
+                foreach (var application in recentApplications)
+                {
+                    RecentApplications.Add(application);
+                }
+
+                StatusMessage = "Dashboard data loaded successfully";
             }
             catch (Exception ex)
             {
-                // In a real implementation, would use a logging service
-                Console.WriteLine($"Error loading dashboard data: {ex.Message}");
-                throw;
+                StatusMessage = $"Error loading dashboard data: {ex.Message}";
             }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        /// <summary>
+        /// Navigates to the profile view
+        /// </summary>
+        private void ViewProfile()
+        {
+            // Navigation logic would be implemented here
+            // This would typically use a navigation service to navigate to the profile view
+        }
+
+        /// <summary>
+        /// Navigates to the job search view
+        /// </summary>
+        private void SearchJobs()
+        {
+            // Navigation logic would be implemented here
+            // This would typically use a navigation service to navigate to the job search view
+        }
+
+        /// <summary>
+        /// Navigates to the applications view
+        /// </summary>
+        private void ViewApplications()
+        {
+            // Navigation logic would be implemented here
+            // This would typically use a navigation service to navigate to the applications view
         }
     }
 }
