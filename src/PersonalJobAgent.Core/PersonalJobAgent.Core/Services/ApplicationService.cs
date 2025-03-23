@@ -11,121 +11,80 @@ namespace PersonalJobAgent.Core.Services
     public class ApplicationService : IApplicationService
     {
         private readonly IApplicationRepository _applicationRepository;
-        private readonly IUserProfileRepository _userProfileRepository;
-        private readonly IJobListingRepository _jobListingRepository;
-        private readonly IAIService _aiService;
-
-        public ApplicationService(
-            IApplicationRepository applicationRepository,
-            IUserProfileRepository userProfileRepository,
-            IJobListingRepository jobListingRepository,
-            IAIService aiService)
+        public ApplicationService(IApplicationRepository applicationRepository)
         {
             _applicationRepository = applicationRepository;
-            _userProfileRepository = userProfileRepository;
-            _jobListingRepository = jobListingRepository;
-            _aiService = aiService;
         }
 
-        public async Task<IEnumerable<Application>> GetApplicationsAsync(int userProfileId)
+        public Task<Application> CreateApplicationAsync(int userProfileId, int jobListingId, string coverLetter = null, string notes = null)
         {
-            return await _applicationRepository.GetByUserProfileIdAsync(userProfileId);
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Application>> GetRecentApplicationsAsync(int userProfileId, int count = 5)
+        public Task<string> GenerateCoverLetterAsync(int userProfileId, int jobListingId)
         {
-            var applications = await _applicationRepository.GetByUserProfileIdAsync(userProfileId);
-            return applications.OrderByDescending(a => a.ApplicationDate).Take(count);
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Application>> GetApplicationsByStatusAsync(int userProfileId, string status)
+        public Task<Application> GetApplicationAsync(int applicationId)
         {
-            var applications = await _applicationRepository.GetByUserProfileIdAsync(userProfileId);
-            return applications.Where(a => a.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+            throw new NotImplementedException();
         }
 
-        public async Task<Application> GetApplicationAsync(int applicationId)
+        public Task<IEnumerable<Application>> GetApplicationsAsync(int userProfileId)
         {
-            return await _applicationRepository.GetByIdAsync(applicationId);
+            throw new NotImplementedException();
         }
 
-        public async Task<Application> CreateApplicationAsync(int userProfileId, int jobListingId, string coverLetter = null, string notes = null)
+        public Task<IEnumerable<Application>> GetApplicationsByStatusAsync(int userProfileId, string status)
         {
-            var application = new Application
+            throw new NotImplementedException();
+        }
+
+        // Existing code...
+
+        public async Task<IEnumerable<Application>> GetApplicationsForProfileAsync(int profileId)
+        {
+            // This is likely the same as GetApplicationsAsync
+            return await _applicationRepository.GetByUserProfileIdAsync(profileId);
+        }
+
+        public async Task<ApplicationStatistics> GetApplicationStatisticsAsync(int profileId)
+        {
+            var applications = await _applicationRepository.GetByUserProfileIdAsync(profileId);
+            var stats = new ApplicationStatistics
             {
-                UserProfileId = userProfileId,
-                JobListingId = jobListingId,
-                ApplicationDate = DateTime.Now,
-                Status = "Applied",
-                CoverLetter = coverLetter,
-                Notes = notes,
-                LastUpdated = DateTime.Now
+                TotalApplications = applications.Count(),
+                PendingApplications = applications.Count(a => a.Status == "Applied" || a.Status == "Pending"),
+                InterviewsScheduled = applications.Count(a => a.Status == "Interview Scheduled" || a.Status == "Interview Completed"),
+                OffersReceived = applications.Count(a => a.Status == "Offer Received" || a.Status == "Offer Accepted"),
+                Rejected = applications.Count(a => a.Status == "Rejected")
             };
 
-            await _applicationRepository.AddAsync(application);
-            return application;
+            // Group applications by status
+            var statusGroups = applications.GroupBy(a => a.Status);
+            foreach (var group in statusGroups)
+            {
+                stats.ApplicationsByStatus[group.Key] = group.Count();
+            }
+
+            return stats;
         }
 
-        public async Task<Application> UpdateApplicationStatusAsync(int applicationId, string status, string notes = null)
+        public Task<string> GetInterviewPreparationAsync(int applicationId)
         {
-            var application = await _applicationRepository.GetByIdAsync(applicationId);
-            if (application != null)
-            {
-                application.Status = status;
-                if (!string.IsNullOrEmpty(notes))
-                {
-                    application.Notes = string.IsNullOrEmpty(application.Notes)
-                        ? notes
-                        : $"{application.Notes}\n\n{DateTime.Now:g} - {status}:\n{notes}";
-                }
-                application.LastUpdated = DateTime.Now;
-
-                await _applicationRepository.UpdateAsync(application);
-            }
-
-            return application;
+            throw new NotImplementedException();
         }
 
-        public async Task<string> GenerateCoverLetterAsync(int userProfileId, int jobListingId)
+        public Task<IEnumerable<Application>> GetRecentApplicationsAsync(int userProfileId, int count = 5)
         {
-            var userProfile = await _userProfileRepository.GetByIdAsync(userProfileId);
-            var jobListing = await _jobListingRepository.GetByIdAsync(jobListingId);
-
-            if (userProfile == null || jobListing == null)
-            {
-                return null;
-            }
-
-            // Convert to JSON for AI service
-            var userProfileJson = System.Text.Json.JsonSerializer.Serialize(userProfile);
-            var jobListingJson = System.Text.Json.JsonSerializer.Serialize(jobListing);
-
-            // Generate cover letter using AI service
-            return await _aiService.GenerateCoverLetterAsync(userProfileJson, jobListingJson);
+            throw new NotImplementedException();
         }
 
-        public async Task<string> GetInterviewPreparationAsync(int applicationId)
+        public Task<Application> UpdateApplicationStatusAsync(int applicationId, string status, string notes = null)
         {
-            var application = await _applicationRepository.GetByIdAsync(applicationId);
-            if (application == null)
-            {
-                return null;
-            }
-
-            var userProfile = await _userProfileRepository.GetByIdAsync(application.UserProfileId);
-            var jobListing = await _jobListingRepository.GetByIdAsync(application.JobListingId);
-
-            if (userProfile == null || jobListing == null)
-            {
-                return null;
-            }
-
-            // Convert to JSON for AI service
-            var userProfileJson = System.Text.Json.JsonSerializer.Serialize(userProfile);
-            var jobListingJson = System.Text.Json.JsonSerializer.Serialize(jobListing);
-
-            // Generate interview preparation using AI service
-            return await _aiService.PrepareInterviewAsync(userProfileJson, jobListingJson);
+            throw new NotImplementedException();
         }
     }
+
 }

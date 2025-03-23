@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using PersonalJobAgent.Core.Models;
 using PersonalJobAgent.Core.Interfaces;
+using CommunityToolkit.Mvvm.Input;
 
 namespace PersonalJobAgent.UI.ViewModels
 {
@@ -62,8 +63,7 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 _selectedApplication = value;
                 OnPropertyChanged();
-                (UpdateStatusCommand as RelayCommand<string>)?.RaiseCanExecuteChanged();
-                (AddNotesCommand as RelayCommand<string>)?.RaiseCanExecuteChanged();
+                CommandManager.InvalidateRequerySuggested();               
             }
         }
         
@@ -90,10 +90,10 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 _isBusy = value;
                 OnPropertyChanged();
-                (UpdateStatusCommand as RelayCommand<string>)?.RaiseCanExecuteChanged();
-                (AddNotesCommand as RelayCommand<string>)?.RaiseCanExecuteChanged();
-                (FilterByStatusCommand as RelayCommand<string>)?.RaiseCanExecuteChanged();
-                (ViewAllApplicationsCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (UpdateStatusCommand as RelayCommand<string>)?.NotifyCanExecuteChanged();
+                (AddNotesCommand as RelayCommand<string>)?.NotifyCanExecuteChanged();
+                (FilterByStatusCommand as RelayCommand<string>)?.NotifyCanExecuteChanged();
+                (ViewAllApplicationsCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
         }
         
@@ -172,7 +172,7 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 IsBusy = true;
                 SelectedApplication = await _applicationService.UpdateApplicationStatusAsync(
-                    SelectedApplication.ApplicationId,
+                    SelectedApplication.Id,
                     status,
                     $"Status updated to {status}");
                 
@@ -206,8 +206,8 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                SelectedApplication = await _applicationService.UpdateApplicationNotesAsync(
-                    SelectedApplication.ApplicationId,
+                SelectedApplication = await _applicationService.UpdateApplicationStatusAsync(
+                    SelectedApplication.Id,
                     notes);
             }
             catch (Exception ex)

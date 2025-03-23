@@ -214,6 +214,16 @@ namespace PersonalJobAgent.UI
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<Core.Models.Application>> GetApplicationsForProfileAsync(int profileId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Core.Models.ApplicationStatistics> GetApplicationStatisticsAsync(int profileId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<string> GetInterviewPreparationAsync(int applicationId)
         {
             throw new NotImplementedException();

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using PersonalJobAgent.Core.Models;
 using PersonalJobAgent.Core.Interfaces;
+using CommunityToolkit.Mvvm.Input;
 
 namespace PersonalJobAgent.UI.ViewModels
 {
@@ -129,8 +130,8 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 _selectedJob = value;
                 OnPropertyChanged();
-                (ApplyCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (SaveJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (ApplyCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (SaveJobCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
         }
         
@@ -144,12 +145,12 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 _isBusy = value;
                 OnPropertyChanged();
-                (SearchCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (ApplyCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (SaveJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (NextPageCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (PreviousPageCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (CreateSavedSearchCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (SearchCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (ApplyCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (SaveJobCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (NextPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (PreviousPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (CreateSavedSearchCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
         }
         

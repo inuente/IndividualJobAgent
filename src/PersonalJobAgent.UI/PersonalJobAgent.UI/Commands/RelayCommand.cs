@@ -3,67 +3,63 @@ using System.Windows.Input;
 
 namespace PersonalJobAgent.UI.Commands
 {
+    using CommunityToolkit.Mvvm.Input;
+
     /// <summary>
     /// Implementation of the ICommand interface for WPF commands
     /// </summary>
-    public class RelayCommand : ICommand
+    using System;
+    using System.Windows.Input;
+
+    namespace PersonalJobAgent.UI.Commands
     {
-        private readonly Action _execute;
-        private readonly Func<bool> _canExecute;
-
-        /// <summary>
-        /// Creates a new command that can always execute
-        /// </summary>
-        /// <param name="execute">The execution logic</param>
-        public RelayCommand(Action execute) : this(execute, null)
+        public class RelayCommand<T> : ICommand
         {
+            private readonly Predicate<T> _canExecute;
+            private readonly Action<T> _execute;
+
+            public RelayCommand(Action<T> execute)
+                : this(execute, null)
+            {
+            }
+
+            public RelayCommand(Action<T> execute, Predicate<T> canExecute)
+            {
+                _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+                _canExecute = canExecute;
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter)
+            {
+                return _canExecute == null || _canExecute((T)parameter);
+            }
+
+            public void Execute(object parameter)
+            {
+                _execute((T)parameter);
+            }
+
+            public void RaiseCanExecuteChanged()
+            {
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
+    }
 
-        /// <summary>
-        /// Creates a new command
-        /// </summary>
-        /// <param name="execute">The execution logic</param>
-        /// <param name="canExecute">The execution status logic</param>
-        public RelayCommand(Action execute, Func<bool> canExecute)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
 
-        /// <summary>
-        /// Determines if this command can be executed
-        /// </summary>
-        /// <param name="parameter">Data used by the command</param>
-        /// <returns>True if the command can execute, false otherwise</returns>
-        public bool CanExecute(object parameter)
-        {
-            return _canExecute == null || _canExecute();
-        }
 
-        /// <summary>
-        /// Executes the command
-        /// </summary>
-        /// <param name="parameter">Data used by the command</param>
-        public void Execute(object parameter)
+    // Add this to a static class in your project
+    public static class CommandExtensions
+    {
+        public static void RaiseCanExecuteChanged(this ICommand command)
         {
-            _execute();
-        }
-
-        /// <summary>
-        /// Raised when changes occur that affect whether the command should execute
-        /// </summary>
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        /// <summary>
-        /// Raises the CanExecuteChanged event
-        /// </summary>
-        public void RaiseCanExecuteChanged()
-        {
+            // Just use CommandManager directly
             CommandManager.InvalidateRequerySuggested();
         }
     }
+
+
+
 }
