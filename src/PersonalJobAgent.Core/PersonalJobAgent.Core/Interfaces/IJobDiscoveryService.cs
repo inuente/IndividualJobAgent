@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PersonalJobAgent.Core.Models;
+using PersonalJobAgent.Core.Models.PersonalJobAgent.Core.Models;
 
 namespace PersonalJobAgent.Core.Interfaces
 {
@@ -10,6 +11,16 @@ namespace PersonalJobAgent.Core.Interfaces
     /// </summary>
     public interface IJobDiscoveryService
     {
+        /// <summary>
+        /// Creates a saved search for job listings
+        /// </summary>
+        /// <param name="userProfileId">User profile ID</param>
+        /// <param name="keywords">Keywords to search for</param>
+        /// <param name="location">Optional location filter</param>
+        /// <param name="name">Name of the saved search</param>
+        /// <returns>The created saved search</returns>
+        Task<SavedSearch> CreateSavedSearchAsync(int userProfileId, string[] keywords, string location = null, string name = null);
+
         /// <summary>
         /// Searches for job listings based on keywords
         /// </summary>

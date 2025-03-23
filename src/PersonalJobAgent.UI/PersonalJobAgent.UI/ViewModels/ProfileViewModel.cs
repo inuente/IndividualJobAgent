@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using PersonalJobAgent.Core.Models;
 using PersonalJobAgent.Core.Interfaces;
+using CommunityToolkit.Mvvm.Input;
 
 namespace PersonalJobAgent.UI.ViewModels
 {
@@ -80,15 +81,15 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 _isEditing = value;
                 OnPropertyChanged();
-                (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (EditCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (CancelCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (AddSkillCommand as RelayCommand<Skill>)?.RaiseCanExecuteChanged();
-                (RemoveSkillCommand as RelayCommand<int>)?.RaiseCanExecuteChanged();
-                (AddExperienceCommand as RelayCommand<WorkExperience>)?.RaiseCanExecuteChanged();
-                (RemoveExperienceCommand as RelayCommand<int>)?.RaiseCanExecuteChanged();
-                (AddEducationCommand as RelayCommand<Education>)?.RaiseCanExecuteChanged();
-                (RemoveEducationCommand as RelayCommand<int>)?.RaiseCanExecuteChanged();
+                (SaveCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (CancelCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (AddSkillCommand as RelayCommand<Skill>)?.NotifyCanExecuteChanged();
+                (RemoveSkillCommand as RelayCommand<int>)?.NotifyCanExecuteChanged();
+                (AddExperienceCommand as RelayCommand<WorkExperience>)?.NotifyCanExecuteChanged();
+                (RemoveExperienceCommand as RelayCommand<int>)?.NotifyCanExecuteChanged();
+                (AddEducationCommand as RelayCommand<Education>)?.NotifyCanExecuteChanged();
+                (RemoveEducationCommand as RelayCommand<int>)?.NotifyCanExecuteChanged();
             }
         }
         
@@ -102,16 +103,16 @@ namespace PersonalJobAgent.UI.ViewModels
             {
                 _isBusy = value;
                 OnPropertyChanged();
-                (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (EditCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (CancelCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (ImportResumeCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (AddSkillCommand as RelayCommand<Skill>)?.RaiseCanExecuteChanged();
-                (RemoveSkillCommand as RelayCommand<int>)?.RaiseCanExecuteChanged();
-                (AddExperienceCommand as RelayCommand<WorkExperience>)?.RaiseCanExecuteChanged();
-                (RemoveExperienceCommand as RelayCommand<int>)?.RaiseCanExecuteChanged();
-                (AddEducationCommand as RelayCommand<Education>)?.RaiseCanExecuteChanged();
-                (RemoveEducationCommand as RelayCommand<int>)?.RaiseCanExecuteChanged();
+                (SaveCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (CancelCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (ImportResumeCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (AddSkillCommand as RelayCommand<Skill>)?.NotifyCanExecuteChanged();
+                (RemoveSkillCommand as RelayCommand<int>)?.NotifyCanExecuteChanged();
+                (AddExperienceCommand as RelayCommand<WorkExperience>)?.NotifyCanExecuteChanged();
+                (RemoveExperienceCommand as RelayCommand<int>)?.NotifyCanExecuteChanged();
+                (AddEducationCommand as RelayCommand<Education>)?.NotifyCanExecuteChanged();
+                (RemoveEducationCommand as RelayCommand<int>)?.NotifyCanExecuteChanged();
             }
         }
         
@@ -175,7 +176,7 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                UserProfile = await _profileService.GetProfileAsync(profileId);
+                UserProfile = await _profileService.GetUserProfileAsync(profileId);
             }
             catch (Exception ex)
             {
@@ -198,7 +199,7 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                UserProfile = await _profileService.UpdateProfileAsync(UserProfile);
+                UserProfile = await _profileService.UpdateUserProfileAsync(UserProfile);
                 IsEditing = false;
             }
             catch (Exception ex)
@@ -251,7 +252,7 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                var addedSkill = await _profileService.AddSkillAsync(UserProfile.ProfileId, skill);
+                var addedSkill = await _profileService.AddSkillAsync(UserProfile.Id, skill);
                 UserProfile.Skills.Add(addedSkill);
             }
             catch (Exception ex)
@@ -276,13 +277,13 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                await _profileService.RemoveSkillAsync(skillId);
+                await _profileService.RemoveSkillAsync(UserProfile.Id, skillId);
                 
                 // Remove from local collection
                 var skillToRemove = null as Skill;
                 foreach (var skill in UserProfile.Skills)
                 {
-                    if (skill.SkillId == skillId)
+                    if (skill.Id == skillId)
                     {
                         skillToRemove = skill;
                         break;
@@ -316,7 +317,7 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                var addedExperience = await _profileService.AddWorkExperienceAsync(UserProfile.ProfileId, experience);
+                var addedExperience = await _profileService.AddWorkExperienceAsync(UserProfile.Id, experience);
                 UserProfile.WorkExperiences.Add(addedExperience);
             }
             catch (Exception ex)
@@ -341,13 +342,13 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                await _profileService.RemoveWorkExperienceAsync(experienceId);
+                await _profileService.RemoveWorkExperienceAsync(UserProfile.Id, experienceId);
                 
                 // Remove from local collection
                 var experienceToRemove = null as WorkExperience;
                 foreach (var experience in UserProfile.WorkExperiences)
                 {
-                    if (experience.ExperienceId == experienceId)
+                    if (experience.Id == experienceId)
                     {
                         experienceToRemove = experience;
                         break;
@@ -381,8 +382,8 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                var addedEducation = await _profileService.AddEducationAsync(UserProfile.ProfileId, education);
-                UserProfile.Educations.Add(addedEducation);
+                var addedEducation = await _profileService.AddEducationAsync(UserProfile.Id, education);
+                UserProfile.Education.Add(addedEducation);
             }
             catch (Exception ex)
             {
@@ -406,13 +407,13 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                await _profileService.RemoveEducationAsync(educationId);
+                await _profileService.RemoveEducationAsync(UserProfile.Id, educationId);
                 
                 // Remove from local collection
                 var educationToRemove = null as Education;
-                foreach (var education in UserProfile.Educations)
+                foreach (var education in UserProfile.Education)
                 {
-                    if (education.EducationId == educationId)
+                    if (education.Id == educationId)
                     {
                         educationToRemove = education;
                         break;
@@ -421,7 +422,7 @@ namespace PersonalJobAgent.UI.ViewModels
                 
                 if (educationToRemove != null)
                 {
-                    UserProfile.Educations.Remove(educationToRemove);
+                    UserProfile.Education.Remove(educationToRemove);
                 }
             }
             catch (Exception ex)

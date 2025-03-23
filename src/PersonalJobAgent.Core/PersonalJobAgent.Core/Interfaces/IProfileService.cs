@@ -11,6 +11,13 @@ namespace PersonalJobAgent.Core.Interfaces
     public interface IProfileService
     {
         /// <summary>
+        /// Imports a user profile from resume text
+        /// </summary>
+        /// <param name="resumeText">The resume text to parse</param>
+        /// <returns>A new or updated user profile based on the resume</returns>
+        Task<UserProfile> ImportProfileFromResumeAsync(string resumeText);
+
+        /// <summary>
         /// Gets the current user profile
         /// </summary>
         /// <returns>Current user profile</returns>

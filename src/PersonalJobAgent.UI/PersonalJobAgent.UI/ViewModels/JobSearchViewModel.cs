@@ -17,7 +17,7 @@ namespace PersonalJobAgent.UI.ViewModels
         private readonly IApplicationService _applicationService;
         private readonly IAIService _aiService;
         
-        private string _keywords;
+        private string[] _keywords;
         private string _location;
         private string _jobType;
         private List<string> _selectedPlatforms;
@@ -52,13 +52,13 @@ namespace PersonalJobAgent.UI.ViewModels
             SaveJobCommand = new RelayCommand(async () => await SaveJobAsync(), () => SelectedJob != null && !IsBusy);
             NextPageCommand = new RelayCommand(async () => await LoadNextPageAsync(), () => !IsBusy && HasNextPage);
             PreviousPageCommand = new RelayCommand(async () => await LoadPreviousPageAsync(), () => !IsBusy && HasPreviousPage);
-            CreateSavedSearchCommand = new RelayCommand(async () => await CreateSavedSearchAsync(), () => !string.IsNullOrWhiteSpace(Keywords) && !IsBusy);
+            CreateSavedSearchCommand = new RelayCommand(async () => await CreateSavedSearchAsync(), () => !string.IsNullOrWhiteSpace(Keywords[0]) && !IsBusy);
         }
         
         /// <summary>
         /// Gets or sets the search keywords.
         /// </summary>
-        public string Keywords
+        public string[] Keywords
         {
             get => _keywords;
             set
@@ -250,8 +250,6 @@ namespace PersonalJobAgent.UI.ViewModels
                 SearchResults = await _jobDiscoveryService.SearchJobsAsync(
                     Keywords,
                     Location,
-                    JobType,
-                    SelectedPlatforms,
                     CurrentPage,
                     PageSize);
                 
@@ -288,8 +286,7 @@ namespace PersonalJobAgent.UI.ViewModels
                 // In a real implementation, would show a dialog to confirm and collect additional information
                 await _applicationService.CreateApplicationAsync(
                     1, // Mock profile ID
-                    SelectedJob.JobId,
-                    null, // Resume version
+                    SelectedJob.Id,                   
                     null, // Cover letter version
                     "Applied via Personal Job Agent");
             }
@@ -319,7 +316,7 @@ namespace PersonalJobAgent.UI.ViewModels
             try
             {
                 IsBusy = true;
-                await _jobDiscoveryService.SaveJobAsync(SelectedJob);
+                await _jobDiscoveryService.SaveJobListingAsync(SelectedJob);
             }
             catch (Exception ex)
             {
@@ -350,9 +347,7 @@ namespace PersonalJobAgent.UI.ViewModels
                 CurrentPage++;
                 SearchResults = await _jobDiscoveryService.SearchJobsAsync(
                     Keywords,
-                    Location,
-                    JobType,
-                    SelectedPlatforms,
+                    Location,                    
                     CurrentPage,
                     PageSize);
             }
@@ -386,8 +381,6 @@ namespace PersonalJobAgent.UI.ViewModels
                 SearchResults = await _jobDiscoveryService.SearchJobsAsync(
                     Keywords,
                     Location,
-                    JobType,
-                    SelectedPlatforms,
                     CurrentPage,
                     PageSize);
             }
@@ -417,12 +410,10 @@ namespace PersonalJobAgent.UI.ViewModels
                 string name = $"Search for {Keywords} in {Location}";
                 
                 await _jobDiscoveryService.CreateSavedSearchAsync(
-                    1, // Mock profile ID
-                    name,
+                    1, // Mock profile ID                    
                     Keywords,
                     Location,
-                    JobType,
-                    SelectedPlatforms);
+                    name);
             }
             catch (Exception ex)
             {

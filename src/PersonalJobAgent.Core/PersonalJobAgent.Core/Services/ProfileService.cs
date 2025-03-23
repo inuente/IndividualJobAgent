@@ -17,7 +17,37 @@
                 _userProfileRepository = userProfileRepository;
             }
 
-            public async Task<UserProfile> GetCurrentUserProfileAsync()
+        public async Task<UserProfile> ImportProfileFromResumeAsync(string resumeText)
+        {
+            // Implementation placeholder
+            // In a real implementation, this would use NLP or AI to extract profile information from resume text
+
+            var profile = new UserProfile
+            {
+                FirstName = "Imported",
+                Email = "imported@example.com",
+                Skills = new List<Skill>(),
+                WorkExperiences = new List<WorkExperience>(),
+                Education = new List<Education>()
+            };
+
+            // Simple parsing logic (placeholder)
+            if (resumeText.Contains("developer") || resumeText.Contains("programmer"))
+            {
+                profile.Skills.Add(new Skill { Name = "Programming", Level = "Intermediate" });
+            }
+
+            if (resumeText.Contains("manager") || resumeText.Contains("management"))
+            {
+                profile.Skills.Add(new Skill { Name = "Management", Level = "Intermediate" });
+            }
+
+            // Return the profile (in a real implementation, this would be saved to the database)
+            return await Task.FromResult(profile);
+        }
+
+
+        public async Task<UserProfile> GetCurrentUserProfileAsync()
             {
                 // For now, return the first user profile or create a new one if none exists
                 var profiles = await _userProfileRepository.GetAllAsync();

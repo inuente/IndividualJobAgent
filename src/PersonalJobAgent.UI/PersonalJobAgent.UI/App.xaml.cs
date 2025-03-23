@@ -3,6 +3,7 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PersonalJobAgent.Core.Interfaces;
+using PersonalJobAgent.Core.Models.PersonalJobAgent.Core.Models;
 using PersonalJobAgent.Core.Services;
 using PersonalJobAgent.Data.Repositories;
 using PersonalJobAgent.UI.ViewModels;
@@ -114,6 +115,11 @@ namespace PersonalJobAgent.UI
             throw new NotImplementedException();
         }
 
+        public Task<Core.Models.UserProfile> ImportProfileFromResumeAsync(string resumeText)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> RemoveEducationAsync(int userProfileId, int educationId)
         {
             throw new NotImplementedException();
@@ -153,6 +159,11 @@ namespace PersonalJobAgent.UI
     public class JobDiscoveryService : IJobDiscoveryService
     {
         public JobDiscoveryService() { }
+
+        public Task<SavedSearch> CreateSavedSearchAsync(int userProfileId, string[] keywords, string location = null, string name = null)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task<IEnumerable<Core.Models.JobListing>> GetExternalJobsAsync(string[] platforms, string[] keywords, string location = null, int count = 10)
         {
