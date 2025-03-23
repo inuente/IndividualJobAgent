@@ -1,0 +1,277 @@
+﻿<Page x:Class="PersonalJobAgent.UI.Views.ProfileView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PersonalJobAgent.UI.Views"
+      xmlns:viewmodels="clr-namespace:PersonalJobAgent.UI.ViewModels"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="800"
+      Title="Profile">
+
+    <Page.DataContext>
+        <viewmodels:ProfileViewModel/>
+    </Page.DataContext>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with action buttons -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Command="{Binding EditCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="8,0" Visibility="{Binding IsEditing, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="AccountEdit" Margin="0,0,8,0"/>
+                        <TextBlock Text="Edit Profile"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding SaveCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="8,0" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSave" Margin="0,0,8,0"/>
+                        <TextBlock Text="Save"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding CancelCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Cancel" Margin="0,0,8,0"/>
+                        <TextBlock Text="Cancel"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <TextBlock Text="Profile Management" FontSize="24" VerticalAlignment="Center"/>
+        </DockPanel>
+
+        <!-- Profile Content -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel>
+                <!-- Basic Information -->
+                <materialDesign:Card Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Basic Information" FontSize="18" FontWeight="Bold" Margin="0,0,0,16"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBox Grid.Row="0" Grid.Column="0" Margin="0,8,8,8"
+                                     materialDesign:HintAssist.Hint="Full Name"
+                                     Text="{Binding UserProfile.Name}"
+                                     IsEnabled="{Binding IsEditing}"/>
+
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="8,8,0,8"
+                                     materialDesign:HintAssist.Hint="Email"
+                                     Text="{Binding UserProfile.Email}"
+                                     IsEnabled="{Binding IsEditing}"/>
+
+                            <TextBox Grid.Row="1" Grid.Column="0" Margin="0,8,8,8"
+                                     materialDesign:HintAssist.Hint="Phone"
+                                     Text="{Binding UserProfile.Phone}"
+                                     IsEnabled="{Binding IsEditing}"/>
+
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="8,8,0,8"
+                                     materialDesign:HintAssist.Hint="Location"
+                                     Text="{Binding UserProfile.Location}"
+                                     IsEnabled="{Binding IsEditing}"/>
+
+                            <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,8"
+                                     materialDesign:HintAssist.Hint="Summary"
+                                     Text="{Binding UserProfile.Summary}"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"
+                                     VerticalScrollBarVisibility="Auto"
+                                     Height="80"
+                                     IsEnabled="{Binding IsEditing}"/>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Skills -->
+                <materialDesign:Card Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MaterialDesignFlatButton}"
+                                    Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Command="{Binding AddSkillCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Add Skill"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="Skills" FontSize="18" FontWeight="Bold"/>
+                        </DockPanel>
+
+                        <ItemsControl ItemsSource="{Binding UserProfile.Skills}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Card Margin="0,4" Padding="8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Level}"/>
+                                            </StackPanel>
+
+                                            <Button Grid.Column="2" Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Command="{Binding DataContext.RemoveSkillCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding Id}"
+                                                    Visibility="{Binding DataContext.IsEditing, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <materialDesign:PackIcon Kind="Delete"/>
+                                            </Button>
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Work Experience -->
+                <materialDesign:Card Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MaterialDesignFlatButton}"
+                                    Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Command="{Binding AddExperienceCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Add Experience"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="Work Experience" FontSize="18" FontWeight="Bold"/>
+                        </DockPanel>
+
+                        <ItemsControl ItemsSource="{Binding UserProfile.WorkExperiences}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Card Margin="0,4" Padding="8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Company}"/>
+                                                <TextBlock>
+                                                    <Run Text="{Binding StartDate, StringFormat='{}{0:MMM yyyy}'}"/>
+                                                    <Run Text=" - "/>
+                                                    <Run Text="{Binding EndDate, StringFormat='{}{0:MMM yyyy}'}"/>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+
+                                            <Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Command="{Binding DataContext.RemoveExperienceCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding Id}"
+                                                    Visibility="{Binding DataContext.IsEditing, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <materialDesign:PackIcon Kind="Delete"/>
+                                            </Button>
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Education -->
+                <materialDesign:Card Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MaterialDesignFlatButton}"
+                                    Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Command="{Binding AddEducationCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Add Education"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="Education" FontSize="18" FontWeight="Bold"/>
+                        </DockPanel>
+
+                        <ItemsControl ItemsSource="{Binding UserProfile.Education}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Card Margin="0,4" Padding="8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Degree}" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Institution}"/>
+                                                <TextBlock>
+                                                    <Run Text="{Binding StartDate, StringFormat='{}{0:yyyy}'}"/>
+                                                    <Run Text=" - "/>
+                                                    <Run Text="{Binding EndDate, StringFormat='{}{0:yyyy}'}"/>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+
+                                            <Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Command="{Binding DataContext.RemoveEducationCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding Id}"
+                                                    Visibility="{Binding DataContext.IsEditing, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <materialDesign:PackIcon Kind="Delete"/>
+                                            </Button>
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Resume Import -->
+                <materialDesign:Card Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="Import from Resume" FontSize="18" FontWeight="Bold" Margin="0,0,0,16"/>
+
+                        <TextBox materialDesign:HintAssist.Hint="Paste your resume text here"
+                                 Text="{Binding ResumeText}"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Height="100"
+                                 Margin="0,0,0,16"/>
+
+                        <Button Command="{Binding ImportResumeCommand}" Style="{StaticResource MaterialDesignRaisedButton}" HorizontalAlignment="Right">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Import" Margin="0,0,8,0"/>
+                                <TextBlock Text="Import Resume"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="2" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="100" Margin="0,0,0,16"/>
+                <TextBlock Text="Processing..." Foreground="White" FontSize="16"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>
+
