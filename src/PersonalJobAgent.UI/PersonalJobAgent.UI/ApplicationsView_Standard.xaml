@@ -1,0 +1,312 @@
+﻿<Page x:Class="PersonalJobAgent.UI.Views.ApplicationsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PersonalJobAgent.UI.Views"
+      xmlns:viewmodels="clr-namespace:PersonalJobAgent.UI.ViewModels"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="800"
+      Title="Applications">
+
+    <Page.DataContext>
+        <viewmodels:ApplicationTrackingViewModel/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="#673AB7"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="FlatButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="StatusBadgeStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="4,2"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Application Tracking" FontSize="24" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <!-- Statistics Panel -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Total Applications -->
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="Total" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ApplicationStats.TotalCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Applied -->
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="Applied" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ApplicationStats.AppliedCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#2196F3"/>
+                </StackPanel>
+
+                <!-- Interviews -->
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="Interviews" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ApplicationStats.InterviewCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#FF9800"/>
+                </StackPanel>
+
+                <!-- Offers -->
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="Offers" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ApplicationStats.OfferCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#4CAF50"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Filter Panel -->
+            <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="0,0,16,0">
+                <StackPanel>
+                    <TextBlock Text="Filter Applications" FontSize="16" FontWeight="Bold" Margin="0,0,0,16"/>
+
+                    <!-- Status Filters -->
+                    <RadioButton Content="All Applications" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=null, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding ViewAllApplicationsCommand}"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Applied" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=Applied, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="Applied"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Screening" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=Screening, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="Screening"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Interview" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=Interview, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="Interview"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Technical Test" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=TechnicalTest, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="TechnicalTest"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Offer" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=Offer, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="Offer"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Rejected" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=Rejected, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="Rejected"
+                                 Margin="0,0,0,8"/>
+                    
+                    <RadioButton Content="Withdrawn" 
+                                 IsChecked="{Binding StatusFilter, ConverterParameter=Withdrawn, Converter={StaticResource StringEqualsConverter}}"
+                                 Command="{Binding FilterByStatusCommand}"
+                                 CommandParameter="Withdrawn"
+                                 Margin="0,0,0,8"/>
+
+                    <Separator Margin="0,16,0,16"/>
+
+                    <!-- Date Range Filter (placeholder for future implementation) -->
+                    <TextBlock Text="Date Range" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <ComboBox Margin="0,0,0,16">
+                        <ComboBoxItem Content="All Time" IsSelected="True"/>
+                        <ComboBoxItem Content="Last 7 Days"/>
+                        <ComboBoxItem Content="Last 30 Days"/>
+                        <ComboBoxItem Content="Last 90 Days"/>
+                    </ComboBox>
+
+                    <!-- Refresh Button -->
+                    <Button Command="{Binding ViewAllApplicationsCommand}" 
+                            Style="{StaticResource FlatButtonStyle}"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,16,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔄" Margin="0,0,8,0"/>
+                            <TextBlock Text="Refresh"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Applications List and Details -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Applications List -->
+                <Border Grid.Row="0" Style="{StaticResource CardStyle}">
+                    <ListView ItemsSource="{Binding Applications}" 
+                              SelectedItem="{Binding SelectedApplication}"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                              BorderThickness="0">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="4" Margin="0,4" Padding="8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding JobListing.Title}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding JobListing.Company}"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                <Border Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}" 
+                                                        Style="{StaticResource StatusBadgeStyle}">
+                                                    <TextBlock Text="{Binding Status}" FontSize="12" Foreground="White"/>
+                                                </Border>
+                                                <TextBlock Text="{Binding AppliedDate, StringFormat='Applied: {0:d}'}" 
+                                                           FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Style="{StaticResource FlatButtonStyle}" ToolTip="View Details">
+                                                <TextBlock Text="👁️"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+
+                <!-- Application Details (when an application is selected) -->
+                <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,16,0,0"
+                        Visibility="{Binding SelectedApplication, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Application Header -->
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="{Binding SelectedApplication.JobListing.Title}" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding SelectedApplication.JobListing.Company}" FontSize="16"/>
+                            <TextBlock Text="{Binding SelectedApplication.JobListing.Location}" FontSize="14" Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <!-- Status Update -->
+                        <ComboBox Grid.Row="0" Grid.Column="1" Width="150"
+                                  ToolTip="Update Status"
+                                  SelectedValue="{Binding SelectedApplication.Status}">
+                            <ComboBoxItem Content="Applied"/>
+                            <ComboBoxItem Content="Screening"/>
+                            <ComboBoxItem Content="Interview"/>
+                            <ComboBoxItem Content="Technical Test"/>
+                            <ComboBoxItem Content="Offer"/>
+                            <ComboBoxItem Content="Rejected"/>
+                            <ComboBoxItem Content="Withdrawn"/>
+                        </ComboBox>
+
+                        <!-- Application Timeline -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,16,0,0">
+                            <TextBlock Text="Application Timeline" FontWeight="Bold" Margin="0,0,0,8"/>
+                            <Border BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="📤" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Application Submitted" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding SelectedApplication.AppliedDate, StringFormat='{}{0:g}'}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <!-- Additional timeline items would be added dynamically based on application history -->
+                        </StackPanel>
+
+                        <!-- Notes Section -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,16,0,0">
+                            <TextBlock Text="Notes" FontWeight="Bold" Margin="0,0,0,8"/>
+                            <TextBox Text="{Binding SelectedApplication.Notes}" 
+                                     TextWrapping="Wrap" 
+                                     AcceptsReturn="True"
+                                     Height="100"
+                                     VerticalScrollBarVisibility="Auto"/>
+                            <Button Command="{Binding AddNotesCommand}" 
+                                    CommandParameter="{Binding SelectedApplication.Notes}"
+                                    Style="{StaticResource FlatButtonStyle}"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,8,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="💾" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Save Notes"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="3" Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="100" Margin="0,0,0,16"/>
+                <TextBlock Text="Loading..." Foreground="White" FontSize="16" TextAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

@@ -70,10 +70,10 @@ namespace PersonalJobAgent.UI
                         view = _serviceProvider.GetRequiredService<Views.ProfileView>();
                         break;
                     case "JobSearch":
-                        view = _serviceProvider.GetRequiredService<Views.JobSearchView>();
+                      //  view = _serviceProvider.GetRequiredService<Views.JobSearchView>();
                         break;
                     case "Applications":
-                        view = _serviceProvider.GetRequiredService<Views.ApplicationsView>();
+                      //  view = _serviceProvider.GetRequiredService<Views.ApplicationsView>();
                         break;
                 }
 

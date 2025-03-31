@@ -1,15 +1,39 @@
-﻿ <Application x:Class="PersonalJobAgent.UI.App"
+﻿<Application x:Class="PersonalJobAgent.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:PersonalJobAgent.UI"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d">
-    
+
     <Application.Resources>
-        
-        <!-- Application resources can be defined here -->
-        
+       
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <local:StringEqualsConverter x:Key="StringEqualsConverter"/>
+            <local:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
+            <!-- Other resources... -->
+       
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Add converters that are used in the views -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+            <!-- Converter for null to visibility -->
+            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+
+            <!-- Converter for string comparison -->
+            <local:StringEqualsConverter x:Key="StringEqualsConverter" />
+
+            <!-- Converter for status to brush color -->
+            <local:StatusToBrushConverter x:Key="StatusToBrushConverter" />
+
+        </ResourceDictionary>
     </Application.Resources>
-    
+
 </Application>
